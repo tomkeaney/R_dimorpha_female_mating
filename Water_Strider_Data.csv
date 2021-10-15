@@ -1,0 +1,87 @@
+﻿site ,id,colour ,tank ,day ,mating_attempts ,success,time,bias
+Axedale ,1,blue ,1,2,3,no,0,F
+Axedale ,2,white ,1,2,0,no,0,F
+Axedale ,3,red,1,2,3,no,0,F
+Axedale ,4,yellow ,1,2,1,no,0,F
+Axedale ,5,metallic ,1,2,0,no,0,F
+Axedale ,6,blue ,2,2,16,yes,31.4,M
+Axedale ,7,red,3,2,1,yes ,2.1,E
+Axedale ,8,white ,3,2,22,yes ,29.3,E
+Axedale ,9,blue ,3,2,10,no ,0,E
+Axedale ,10,blue ,4,3,0,no ,0,F
+Axedale ,11,white ,4,3,0,no,0,F
+Axedale ,12,red,4,3,0,no,0,F
+Axedale ,13,yellow ,4,3,0,no,0,F
+Axedale ,14,metallic ,4,3,0,no,0,F
+Axedale ,15,white ,5,3,6,no ,0,M
+Axedale ,16,white ,6,3,0,no,0,E
+Axedale ,17,red,6,3,0,no,0,E
+Axedale ,18,yellow ,6,3,0,no,0,E
+Axedale ,19,white ,7,3,4,yes,27.55,M
+Axedale ,20,white ,8,4,,no,0,F
+Axedale ,21,red,8,4,0,no,0,F
+Axedale ,22,blue ,8,4,1,yes,2.3,F
+Axedale ,23,yellow ,8,4,0,no,0,F
+Axedale ,24,metallic ,8,4,0,no,0,F
+Echuca ,25,metallic ,9,4,0,no ,0,E
+Echuca ,26,yellow ,9,4,0,no,0,E
+Echuca ,27,blue ,9,4,0,no,0,E
+Echuca ,28,yellow ,10,4,0,no,0,M
+Echuca ,29,blue ,11,4,2,no,0,M
+Echuca ,30,white ,12,4,0,no,0,E
+Echuca ,31,metallic ,12,4,0,no,0,E
+Echuca ,32,blue ,12,4,0,no,0,E
+Axedale ,33,blue ,13,5,0,no,0,F
+Axedale ,34,white ,13,5,0,no,0,F
+Axedale ,35,yellow ,13,5,0,no,0,F
+Axedale ,36,red,13,5,0,no,0,F
+Axedale ,37,metallic ,13,5,0,no,0,F
+Axedale ,38,blue ,14,5,2,no,0,M
+Axedale ,39,blue ,15,5,7,no,0,E
+Axedale ,40,red,15,5,21,no,0,E
+Axedale ,41,white ,15,5,0,no,0,E
+Axedale ,42,yellow ,16,5,6,no,0,M
+Axedale ,43,red,17,5,0,no,0,F
+Axedale ,44,white ,17,5,0,no,0,F
+Axedale ,45,yellow ,17,5,0,no,0,F
+Axedale ,46,blue ,17,5,0,no,0,F
+Axedale ,47,metallic ,17,5,0,no,0,F
+Axedale ,48,red,18,5,0,no,0,E
+Axedale ,49,white ,18,5,0,no,0,E
+Axedale ,50,metallic ,18,5,0,no,0,E
+Axedale ,51,yellow ,19,5,3,no ,0,M
+Axedale ,52,red,20,5,0,no,0,F
+Axedale ,53,yellow ,20,5,0,no,0,F
+Axedale ,54,white ,20,5,0,no,0,F
+Axedale ,55,metallic ,20,5,0,no,0,F
+Axedale ,56,blue ,20,5,0,no,0,F
+Axedale ,57,white ,21,5,2,no,0,E
+Axedale ,58,red,21,5,0,no,0,E
+Axedale ,59,blue ,21,5,0,no,0,E
+Axedale ,60,red,22,5,0,no,0,M
+Axedale ,61,yellow ,23,5,0,no,0,F
+Axedale ,62,red,23,5,0,no,0,F
+Axedale ,63,blue ,23,5,0,no,0,F
+Axedale ,64,white ,23,5,0,no,0,F
+Axedale ,65,metallic ,23,5,0,no,0,F
+Axedale ,66,red,24,6,1,no,0,F
+Axedale ,67,yellow ,24,6,0,no,0,F
+Axedale ,68,metallic ,24,6,0,no,0,F
+Axedale ,69,white ,24,6,0,no,0,F
+Axedale ,70,blue ,24,6,0,no,0,F
+Axedale ,71,yellow ,25,6,0,no,0,M
+Axedale ,72,yellow ,26,6,0,no,0,E
+Axedale ,73,red,26,6,0,no,0,E
+Axedale ,74,blue ,26,6,0,no,0,E
+Axedale ,75,metallic ,27,7,0,no,0,F
+Axedale ,76,blue ,27,7,0,no,0,F
+Axedale ,77,red,27,7,0,no,0,F
+Axedale ,78,yellow ,27,7,0,no,0,F
+Axedale ,79,white ,27,7,2,no,0,F
+Axedale ,80,yellow ,28,7,10,no,0,E
+Axedale ,81,white ,28,7,20,no,0,E
+Axedale ,82,red,28,7,7,no,0,E
+Axedale ,83,red,29,7,2,no,0,E
+Axedale ,84,blue ,29,7,0,no,0,E
+Axedale ,85,metallic ,29,7,0,no,0,E
+Axedale ,86,blue ,30,7,6,no,0,M

@@ -1,0 +1,228 @@
+---
+title: "EAB data analysis 2021"
+author: "Annabelle Ho, Vincent Knowles, Ruby Mcdowell, Yvonne Wang and Tom Keaney"
+date: "20/04/2021"
+output: 
+  html_document:
+    code_folding: hide
+    toc: yes
+    toc_float: yes
+    
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, cache = FALSE)
+```
+
+## Intro
+
+In this doc I have all the code to do the analysis we spoke about yesterday, and to make a couple of plots. Feel free to browse through as this might be helpful if you weren't 100% sure what was going on yesterday. Click on the button that says **code** to show the R code. You may use one of the plots (they show the same info so pick one) in your report, or you can make a different one that you like better! 
+
+## What this document is
+
+After collecting data I like to document my analysis in a report-style document. I do this for my own benefit and to improve the reproducibility and transparency of my science. It allows me to quickly look up code I've used previously, with a description of how or why I used it. It also pulls the sheet off of the analysis process, which is often only vaguely described in papers. The report accompanies the manuscript, and recently I've been submitting it as part of the supplementary material. 
+
+I use the R markdown package you see here to write these reports. R markdown operates out of R studio, but with what I consider to be some major improvements. First of all, the document is split into two parts: code chunks and writing space. R code is written in the chunks, and plain text (you don't need hashes!) anywhere else. Some consider R markdown to be a better writing program than word. If any of you are interested in doing a Masters or Honours (or any form of data analysis down the line), I think it's well worth taking the time to have a look at.  
+
+To open an R markdown file go to File -> New File -> R markdown
+
+## Load packages
+
+The functional power of R can be substantially improved by installing and loading packages. In the code chunk below we load in some packages to make coding easier, and some that allow us to fit linear models.
+
+```{r packages}
+
+library(tidyverse) # for tidy coding and ggplot2
+library(lme4) # for the lmer and glmer mixed model functions
+library(lmerTest) # Used to get p-values for lmer models using simulation. It over-writes lmer() with a new version
+library(glmmTMB) # for faster glms
+library(kableExtra) # for scrolling tables
+library(DT) # for even better tables
+library(car) # for the good Anova function - gives us type II and III which are needed for unbalanced designs
+
+```
+
+## The dataset 
+
+```{r}
+data <- read_csv("Water_strider_Data.csv")
+
+# Create a function to build HTML searchable tables - you can copy this and it will work!
+
+my_data_table <- function(df){
+  datatable(
+    df, rownames=FALSE,
+    autoHideNavigation = TRUE,
+    extensions = c("Scroller",  "Buttons"),
+    options = list(
+      dom = 'Bfrtip',
+      deferRender=TRUE,
+      scrollX=TRUE, scrollY=400,
+      scrollCollapse=TRUE,
+      buttons =
+        list('pageLength', 'colvis', 'csv', list(
+          extend = 'pdf',
+          pageSize = 'A4',
+          orientation = 'landscape',
+          filename = 'water_strdier_data')),
+      pageLength = 90
+    )
+  )
+}
+
+# now use the function we made above, all you need to do is put your dataframes name in 
+
+my_data_table(data)
+```
+
+## Analysis
+
+**First lets make sure our variables are coded correctly**
+
+We do this because we don't want R to interpret our data incorrectly. For example, if we didn't change anything, tank is coded as a continuous numeric variable. Tanks are relatively indepedent of one another, and Tank 10 is no larger than Tank 1 which is currently assumed as a continuous variable. We change this to a factor, which makes this a categorical variable.
+
+```{r}
+data <- data %>% 
+  mutate(id = as.factor(id),
+         tank = as.factor(tank),
+         bias = as.factor(bias))
+
+# reorder the sex ratio treatments so that they flow logically
+
+data$bias <- fct_relevel(data$bias, "E", after = 1)
+```
+
+**Writing the model**
+
+Lets look at how sex ratio and the colour we painted females affected the number of mating attempts. We predicted that as the sex ratio becomes male biased, females will be subject to more mating attempts from males. If this is the case, we expect that this is costly for females and that females will mate more frequently under male-biased conditions to avoid these costs. Unfortunately we did not observe enough matings to conduct a meaninful analysis.
+
+It is plausible that paint colour may affect female behaviour, which could affect the number of times males attempt to mate with that female.
+
+I don't have this in my dataset, but you can also add the design change variable (where some water striders were painted 10 mins before the trial and others at least 24 hours before) as anothe rpredictor variable. Together with paint colour, including these as predictors allows us to test whether sex ratio affected number of mating attempts per female after accoutning for paint colour and the design change.
+
+```{r}
+
+mating_attempts_model <- glmmTMB(mating_attempts ~ bias + colour, 
+                            family = gaussian,
+                            data = data)
+
+```
+
+To have a look at the results, you can use the `Anova` function (from the car package) 
+
+```{r}
+Anova(mating_attempts_model, type = "II")
+
+anovaresults <- aov(mating_attempts_model)
+```
+
+There are 3 different types and I always forget which to use. So I generally google until I find [this](https://mcfromnz.wordpress.com/2011/03/02/anova-type-iiiiii-ss-explained/). In our case, type II will get the job done, because we don't have an interaction in our model.
+
+Or you can use the `summary()` function. 
+
+```{r}
+summary(mating_attempts_model)
+```
+
+
+Note how `summary()` provides a different output to `Anova()`. This is because `Anova()` is looking for a general effect of Sex_ratio. You can't tell which groups differ from one another. With `summary()` it compares each group to a reference level (defaults to the first treatment alphabetically). This means you get an estimate of the difference between each group with the reference, plus an associated P-value.  
+
+`summary()` works in a similar way to the Tukey's test. However, the tukey's test output looks a little different. It provides an estimate of the difference between each Sex ratio treatment (called diff), with confidence intervals (lwr and upr) and a P value (called p adj) 
+
+```{r}
+TukeyHSD(anovaresults)
+```
+
+So that's the differences sorted. If we just want to look at the means for mating attempts per female in each treatment we can predict them from the original model.
+
+```{r}
+
+# For prediction lets drop the colour variable from our model to make things simpler
+
+mating_attempts_model_reduced <- glmmTMB(mating_attempts ~ bias, 
+                                         family = gaussian,
+                                         data = data)
+
+new_data <- data %>%
+  select(bias)  %>% 
+  distinct() 
+
+
+predict_means <- predict(mating_attempts_model_reduced, newdata = new_data, type = "response", se.fit = TRUE, re.form = ~0) %>%
+  unlist() %>% 
+  as_tibble()
+
+pred_1a <- predict_means %>% 
+  slice(1:3) %>% 
+  rename(mean_estimate = "value")
+
+pred_1b <- predict_means %>% 
+  slice(4:6) %>% 
+  rename(SE = "value")
+  
+predict_means <- cbind(new_data, pred_1a, pred_1b) %>% 
+  rename(mating_attempts = mean_estimate) %>% 
+  mutate(Lower95CI = mating_attempts - (SE * 1.96),
+         Upper95CI = mating_attempts + (SE * 1.96))
+
+predict_means_clean <- 
+  predict_means %>% 
+  mutate(bias = fct_recode(predict_means$bias, `Female biased` = "F", Equal = "E", `Male biased` = "M")) %>% 
+  rename(`Sex ratio treatment` = bias)
+
+
+  kable(predict_means_clean) %>% 
+  kable_styling()
+```
+
+Note that the female biased treatment has a negative lower CI. This is a bug because it's impossible to have negative mating attempts. **Replace the lower limit with 0**.
+
+```{r}
+predict_means[1, 4] = 0
+
+predict_means_clean[1, 4] = 0
+```
+
+
+## Plotting the data
+
+There are two main ways to build plots in R: using the base R function `plot()` or using the tidyverse function `ggplot()`. I personally use ggplot so that's what we'll do here.
+
+Lets make a barplot and a point range plot, with the sex ratio treatment on the x axis and the number of mating attempts on the y axis. 
+
+```{r}
+
+ggplot(predict_means_clean) +
+  geom_bar(aes(x=`Sex ratio treatment`, y=mating_attempts), stat="identity", fill="skyblue", alpha=0.7) +
+  #geom_pointrange(aes(x=`Sex ratio treatment`, y=mating_attempts, ymin=Lower95CI, ymax=Upper95CI), colour="orange", alpha=1, size=1.3) +
+  geom_errorbar( aes(x=`Sex ratio treatment`, ymin=Lower95CI, ymax=Upper95CI), width=0.1, colour="orange", alpha=0.9, size=1) +
+  labs(x = "Sex ratio treatment", y = "Mean number of mating attempts per female\n (95% CIs)") +
+  theme_bw() +
+  theme(legend.position = "none",
+        panel.grid.major.x = element_blank(),
+        text = element_text(size=16))
+```
+
+We can also alternatively plot this like so, which has the advantage of showing the raw data (in grey), with the mean and 95% CIs in orange. But the raw data makes the pattern less clear, so the choice is yours (or make something completely different!).
+
+```{r}
+# ggplot build plots in layers, after each layer you can add another by using the + symbol
+
+data <- data %>% 
+  mutate(bias = fct_recode(data$bias, `Female biased` = "F", Equal = "E", `Male biased` = "M")) %>% 
+  rename(`Sex ratio treatment` = bias)
+
+
+ggplot(data = data) +
+  geom_jitter(data = data, aes(x = `Sex ratio treatment`, y = mating_attempts, fill = `Sex ratio treatment`), width = 0.1, size = 5, alpha = 0.5) +
+  geom_errorbar(data = predict_means_clean, aes(x = `Sex ratio treatment`, ymax = Upper95CI, ymin = Lower95CI),
+                colour = "orange", fill = "black", width = 0, size = 1.2) + 
+  geom_point(data = predict_means_clean, aes(x = `Sex ratio treatment`, y = mating_attempts),
+             size = 7, shape = 21, fill = "orange", colour = "black") +
+  labs(x = "Sex ratio treatment", y = "Number of mating attempts per female\n (95% CIs)") +
+  theme_bw() +
+  theme(legend.position = "none",
+        panel.grid.major.x = element_blank(),
+        text = element_text(size=16))
+  
+```
